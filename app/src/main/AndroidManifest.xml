@@ -21,6 +21,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.SearchPasswordActivity" />
+        <activity
+            android:name=".activity.AddEditActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

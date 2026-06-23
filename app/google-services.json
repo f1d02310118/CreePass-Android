@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "123099700980",
+    "firebase_url": "https://creepass-f063e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "creepass-f063e",
+    "storage_bucket": "creepass-f063e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123099700980:android:5d2230f385470ea7be88a1",
+        "android_client_info": {
+          "package_name": "com.example.projectmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFENUVtFP-cgmr3kl23TBhJqpqsoN9IDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,7 +17,9 @@ import com.example.projectmobile.model.PasswordItem
 class PasswordAdapter(
     private val context: Context,
     private var passwordList: MutableList<PasswordItem>,
-    private val onItemClick: (PasswordItem) -> Unit
+    private val onItemClick: (PasswordItem) -> Unit,
+    private val onEditClick: (PasswordItem) -> Unit,
+    private val onDeleteClick: (PasswordItem) -> Unit
 ) : RecyclerView.Adapter<PasswordAdapter.PasswordViewHolder>() {
 
     inner class PasswordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,6 +27,10 @@ class PasswordAdapter(
         val tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
         val tvPassword: TextView = itemView.findViewById(R.id.tvPassword)
         val tvCategory: TextView = itemView.findViewById(R.id.tvCategory)
+        val btnMore: ImageButton = itemView.findViewById(R.id.btnMore)
+        val layoutAction: View = itemView.findViewById(R.id.layoutAction)
+        val btnEdit: ImageButton = itemView.findViewById(R.id.btnEdit)
+        val btnDelete: ImageButton = itemView.findViewById(R.id.btnDelete)
         val btnTogglePassword: ImageButton = itemView.findViewById(R.id.btnTogglePassword)
         val btnCopyPassword: ImageButton = itemView.findViewById(R.id.btnCopyPassword)
         var isPasswordVisible: Boolean = false
@@ -41,6 +47,7 @@ class PasswordAdapter(
         holder.tvTitle.text = item.title
         holder.tvUsername.text = item.username
         holder.tvCategory.text = item.category
+        holder.layoutAction.visibility = View.GONE
 
         // Default sembunyikan password
         holder.isPasswordVisible = false
@@ -71,6 +78,22 @@ class PasswordAdapter(
         // Klik item untuk lihat detail
         holder.itemView.setOnClickListener {
             onItemClick(item)
+        }
+
+        holder.btnMore.setOnClickListener {
+            if (holder.layoutAction.visibility == View.VISIBLE) {
+                holder.layoutAction.visibility = View.GONE
+            } else {
+                holder.layoutAction.visibility = View.VISIBLE
+            }
+        }
+
+        holder.btnEdit.setOnClickListener {
+            onEditClick(item)
+        }
+
+        holder.btnDelete.setOnClickListener {
+            onDeleteClick(item)
         }
     }
 
