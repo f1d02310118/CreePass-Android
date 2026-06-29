@@ -2,13 +2,25 @@ package com.example.projectmobile.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.PopupMenu
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,9 +28,15 @@ import com.example.projectmobile.R
 import com.example.projectmobile.adapter.PasswordAdapter
 import com.example.projectmobile.model.PasswordItem
 import com.example.projectmobile.dialog.PasswordDetailDialog
+import com.example.projectmobile.util.CryptoUtil
+import org.json.JSONArray
+import org.json.JSONObject
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.MemoryCacheSettings
+import com.google.firebase.firestore.PersistentCacheSettings
+import com.google.firebase.firestore.firestoreSettings
 
 class SearchPasswordActivity : AppCompatActivity() {
     private val db   = Firebase.firestore
@@ -26,16 +44,34 @@ class SearchPasswordActivity : AppCompatActivity() {
     private lateinit var etSearch: EditText
     private lateinit var rvPasswords: RecyclerView
     private lateinit var tvEmptyState: TextView
+    private lateinit var progressBar: ProgressBar
     private lateinit var btnBack: ImageButton
     private lateinit var btnAdd: ImageButton
     private lateinit var btnClearSearch: ImageButton
+    private lateinit var btnLogout: ImageButton
+    private lateinit var btnMoreOptions: ImageButton
+    private lateinit var layoutHeader: LinearLayout
     private lateinit var adapter: PasswordAdapter
     private var fullList: MutableList<PasswordItem> = mutableListOf()
+    private var searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
+    private var needsBiometric = false
+
+    private val exportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if (uri != null) performExport(uri)
+    }
+
+    private val importLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) performImport(uri)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_password)
 
+        db.firestoreSettings = firestoreSettings {
+            setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
+        }
         initViews()
         setupRecyclerView()
         setupSearch()
@@ -47,9 +83,19 @@ class SearchPasswordActivity : AppCompatActivity() {
         etSearch = findViewById(R.id.etSearch)
         rvPasswords = findViewById(R.id.rvPasswords)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        progressBar = findViewById(R.id.progressBar)
         btnBack = findViewById(R.id.btnBack)
         btnAdd = findViewById(R.id.btnAdd)
         btnClearSearch = findViewById(R.id.btnClearSearch)
+        btnLogout = findViewById(R.id.btnLogout)
+        btnMoreOptions = findViewById(R.id.btnMoreOptions)
+        layoutHeader = findViewById(R.id.layoutHeader)
+
+        ViewCompat.setOnApplyWindowInsetsListener(layoutHeader) { view, insets ->
+            val top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            view.setPadding(view.paddingLeft, top + 16, view.paddingRight, view.paddingBottom)
+            insets
+        }
     }
 
     private fun getCurrentUserId(): String? {
@@ -57,13 +103,16 @@ class SearchPasswordActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        // val uid = getCurrentUserId()
-        val uid = "HN81h5r5ajebYqueoMTsFiKP2Vi1"
+        val uid = getCurrentUserId()
 
         if (uid == null) {
-            Toast.makeText(this, "User belum login", Toast.LENGTH_SHORT).show()
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.login_not_logged_in), Snackbar.LENGTH_SHORT).show()
             return
         }
+
+        progressBar.visibility = View.VISIBLE
+        tvEmptyState.visibility = View.GONE
+        rvPasswords.visibility = View.GONE
 
         db.collection("passwords")
             .whereEqualTo("userId", uid)
@@ -73,48 +122,75 @@ class SearchPasswordActivity : AppCompatActivity() {
                 fullList.clear()
 
                 for (doc in result) {
-                    val item = doc.toObject(PasswordItem::class.java).copy(
+                    val raw = doc.toObject(PasswordItem::class.java).copy(
                         id = doc.id
                     )
+                    val item = raw.copy(password = CryptoUtil.decrypt(raw.password))
                     fullList.add(item)
                 }
 
+                progressBar.visibility = View.GONE
                 adapter.updateList(fullList)
                 updateEmptyState(fullList)
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Gagal load data", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.GONE
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.load_failed), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.load_retry)) { loadData() }
+                    .show()
             }
     }
 
     private fun setupRecyclerView() {
         adapter = PasswordAdapter(this, fullList.toMutableList(),
             onItemClick = { item ->
-                // Buka dialog detail saat item diklik
                 showDetailDialog(item)
             },
             onEditClick = { item ->
-                // nanti arahkan ke edit activity
                 val intent = Intent(this, AddEditActivity::class.java)
                 intent.putExtra("id", item.id)
+                intent.putExtra("title", item.title)
+                intent.putExtra("username", item.username)
+                intent.putExtra("password", item.password)
+                intent.putExtra("url", item.url)
+                intent.putExtra("category", item.category)
                 startActivity(intent)
             },
             onDeleteClick = { item ->
-                db.collection("passwords")
-                    .document(item.id)
-                    .delete()
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Berhasil dihapus", Toast.LENGTH_SHORT).show()
-                        loadData()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Gagal hapus", Toast.LENGTH_SHORT).show()
-                    }
+                showDeleteConfirmation(item)
             }
         )
         rvPasswords.layoutManager = LinearLayoutManager(this)
         rvPasswords.adapter = adapter
+        rvPasswords.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    currentFocus?.windowToken?.let { imm.hideSoftInputFromWindow(it, 0) }
+                }
+            }
+        })
         updateEmptyState(fullList)
+    }
+
+    private fun showDeleteConfirmation(item: PasswordItem) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.delete_title))
+            .setMessage(getString(R.string.delete_message, item.title))
+            .setPositiveButton(getString(R.string.delete_confirm)) { _, _ ->
+                db.collection("passwords")
+                    .document(item.id)
+                    .delete()
+                    .addOnSuccessListener {
+                        Snackbar.make(findViewById(android.R.id.content), getString(R.string.delete_success), Snackbar.LENGTH_SHORT).show()
+                        loadData()
+                    }
+                    .addOnFailureListener {
+                        Snackbar.make(findViewById(android.R.id.content), getString(R.string.delete_failed), Snackbar.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton(getString(R.string.delete_cancel), null)
+            .show()
     }
 
     private fun setupSearch() {
@@ -125,15 +201,15 @@ class SearchPasswordActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 val query = s.toString().trim()
 
-                // Tampilkan/sembunyikan tombol clear
                 btnClearSearch.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
 
-                filterPassword(query)
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+                searchRunnable = Runnable {
+                    filterPassword(query)
+                }
+                searchHandler.postDelayed(searchRunnable!!, 300)
             }
         })
-
-        // Auto-fokus ke search bar saat masuk halaman
-        etSearch.requestFocus()
     }
 
     private fun setupButtons() {
@@ -152,6 +228,141 @@ class SearchPasswordActivity : AppCompatActivity() {
             }
 
             startActivity(Intent(this, AddEditActivity::class.java))
+        }
+
+        btnMoreOptions.setOnClickListener { view ->
+            PopupMenu(this, view).apply {
+                menu.add(0, 1, 0, getString(R.string.export_title))
+                menu.add(0, 2, 0, getString(R.string.import_title))
+                menu.add(0, 3, 0, getString(R.string.logout))
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        1 -> exportData()
+                        2 -> importData()
+                        3 -> showLogoutConfirm()
+                    }
+                    true
+                }
+                show()
+            }
+        }
+
+        btnLogout.setOnClickListener {
+            showLogoutConfirm()
+        }
+    }
+
+    private fun showLogoutConfirm() {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.logout))
+            .setMessage(getString(R.string.logout_confirm))
+            .setPositiveButton(getString(R.string.logout)) { _, _ ->
+                auth.signOut()
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.logout_success), Snackbar.LENGTH_SHORT).show()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton(getString(R.string.delete_cancel), null)
+            .show()
+    }
+
+    private fun exportData() {
+        val uid = getCurrentUserId()
+        if (uid == null) {
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.login_not_logged_in), Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        exportLauncher.launch("CreePass_Backup.json")
+    }
+
+    private fun performExport(uri: android.net.Uri) {
+        val uid = getCurrentUserId() ?: return
+        progressBar.visibility = View.VISIBLE
+
+        db.collection("passwords")
+            .whereEqualTo("userId", uid)
+            .get()
+            .addOnSuccessListener { result ->
+                val jsonArray = JSONArray()
+                for (doc in result) {
+                    val raw = doc.toObject(PasswordItem::class.java).copy(id = doc.id)
+                    val item = JSONObject().apply {
+                        put("title", raw.title)
+                        put("username", raw.username)
+                        put("password", CryptoUtil.decrypt(raw.password))
+                        put("url", raw.url)
+                        put("category", raw.category)
+                    }
+                    jsonArray.put(item)
+                }
+
+                try {
+                    contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.write(jsonArray.toString(2).toByteArray(Charsets.UTF_8))
+                    }
+                    progressBar.visibility = View.GONE
+                    Snackbar.make(findViewById(android.R.id.content), getString(R.string.export_success), Snackbar.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    progressBar.visibility = View.GONE
+                    Snackbar.make(findViewById(android.R.id.content), getString(R.string.export_failed), Snackbar.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener {
+                progressBar.visibility = View.GONE
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.export_failed), Snackbar.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun importData() {
+        val uid = getCurrentUserId()
+        if (uid == null) {
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.login_not_logged_in), Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        importLauncher.launch(arrayOf("application/json", "*/*"))
+    }
+
+    private fun performImport(uri: android.net.Uri) {
+        val uid = getCurrentUserId() ?: return
+
+        try {
+            val jsonString = contentResolver.openInputStream(uri)?.use { inputStream ->
+                inputStream.bufferedReader(Charsets.UTF_8).readText()
+            } ?: return
+
+            val jsonArray = JSONArray(jsonString)
+            var imported = 0
+
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val title = obj.optString("title", "")
+                val username = obj.optString("username", "")
+                val passwordPlain = obj.optString("password", "")
+                val url = obj.optString("url", "")
+                val category = obj.optString("category", "Lainnya")
+
+                if (title.isEmpty() && passwordPlain.isEmpty()) continue
+
+                val passwordEncrypted = CryptoUtil.encrypt(passwordPlain)
+                val item = PasswordItem(
+                    title = title,
+                    username = username,
+                    password = passwordEncrypted,
+                    url = url,
+                    category = category,
+                    userId = uid
+                )
+
+                db.collection("passwords").add(item)
+                imported++
+            }
+
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.import_success) + " ($imported)", Snackbar.LENGTH_SHORT).show()
+            loadData()
+        } catch (e: Exception) {
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.import_invalid_format), Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -178,9 +389,9 @@ class SearchPasswordActivity : AppCompatActivity() {
 
             val query = etSearch.text.toString().trim()
             tvEmptyState.text = if (query.isNotEmpty()) {
-                "Tidak ada hasil untuk \"$query\""
+                getString(R.string.search_empty_query, query)
             } else {
-                "Belum ada password tersimpan"
+                getString(R.string.search_empty_default)
             }
         } else {
             tvEmptyState.visibility = View.GONE
@@ -195,6 +406,49 @@ class SearchPasswordActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadData()
+        if (needsBiometric && auth.currentUser != null) {
+            showBiometricPrompt()
+        } else {
+            loadData()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        needsBiometric = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchHandler.removeCallbacksAndMessages(null)
+    }
+
+    private fun showBiometricPrompt() {
+        val executor = ContextCompat.getMainExecutor(this)
+        val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                needsBiometric = false
+                loadData()
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
+                    errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
+                    auth.signOut()
+                    val intent = Intent(this@SearchPasswordActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            }
+        })
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.app_name))
+            .setSubtitle(getString(R.string.biometric_subtitle))
+            .setNegativeButtonText(getString(R.string.login_title))
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
     }
 }

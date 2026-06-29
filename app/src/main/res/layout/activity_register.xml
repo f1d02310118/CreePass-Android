@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0F2B"
+    android:background="@color/primary_darker"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="25dp">
@@ -10,8 +10,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="REGISTER"
-        android:textColor="#FFFFFF"
+        android:text="@string/register_title"
+        android:textColor="@color/text_white"
         android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginBottom="30dp"/>
@@ -20,30 +20,30 @@
         android:id="@+id/etRegEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="@string/register_email_hint"
         android:inputType="textEmailAddress"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9CA3AF"
-        android:backgroundTint="#FFFFFF"/>
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/text_muted"
+        android:backgroundTint="@color/text_white"/>
 
     <EditText
         android:id="@+id/etRegPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="@string/register_password_hint"
         android:inputType="textPassword"
         android:layout_marginTop="15dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9CA3AF"
-        android:backgroundTint="#FFFFFF"/>
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/text_muted"
+        android:backgroundTint="@color/text_white"/>
 
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="REGISTER"
+        android:text="@string/register_button"
         android:layout_marginTop="30dp"
-        android:backgroundTint="#5B2EE8"
-        android:textColor="#FFFFFF"/>
+        android:backgroundTint="@color/primary_purple"
+        android:textColor="@color/text_white"/>
 
 </LinearLayout>

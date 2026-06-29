@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0F2B"
+    android:background="@color/primary_darker"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="25dp">
@@ -10,8 +10,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CreePass"
-        android:textColor="#FFFFFF"
+        android:text="@string/login_title"
+        android:textColor="@color/text_white"
         android:textSize="32sp"
         android:textStyle="bold"/>
 
@@ -19,32 +19,32 @@
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="@string/login_email_hint"
         android:layout_marginTop="30dp"
-        android:backgroundTint="#FFFFFF"
+        android:backgroundTint="@color/text_white"
         android:inputType="textEmailAddress"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9CA3AF"/>
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/text_muted"/>
 
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="@string/login_password_hint"
         android:layout_marginTop="15dp"
-        android:backgroundTint="#FFFFFF"
+        android:backgroundTint="@color/text_white"
         android:inputType="textPassword"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9CA3AF"/>
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/text_muted"/>
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="LOGIN"
+        android:text="@string/login_button"
         android:layout_marginTop="20dp"
-        android:backgroundTint="#5B2EE8"
-        android:textColor="#FFFFFF"/>
+        android:backgroundTint="@color/primary_purple"
+        android:textColor="@color/text_white"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -55,16 +55,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Belum punya akun? "
-            android:textColor="#9CA3AF"
+            android:text="@string/login_no_account"
+            android:textColor="@color/text_muted"
             android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/tvToRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register"
-            android:textColor="#00D4FF"
+            android:text="@string/login_register_link"
+            android:textColor="@color/accent_cyan"
             android:textStyle="bold"
             android:textSize="14sp"
             android:clickable="true"

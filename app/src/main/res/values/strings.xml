@@ -1,3 +1,113 @@
 <resources>
     <string name="app_name">CreePass</string>
+
+    <!-- Login -->
+    <string name="login_title">CreePass</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">LOGIN</string>
+    <string name="login_no_account">Belum punya akun? </string>
+    <string name="login_register_link">Register</string>
+    <string name="login_success">Login Berhasil</string>
+    <string name="login_failed">Email atau Password Salah</string>
+    <string name="login_email_required">Email wajib diisi!</string>
+    <string name="login_password_required">Password wajib diisi!</string>
+    <string name="login_not_logged_in">User belum login</string>
+
+    <!-- Register -->
+    <string name="register_title">REGISTER</string>
+    <string name="register_email_hint">Email</string>
+    <string name="register_password_hint">Password</string>
+    <string name="register_button">REGISTER</string>
+    <string name="register_success">Pendaftaran Berhasil!</string>
+    <string name="register_failed">Gagal Daftar: %s</string>
+    <string name="register_email_required">Email wajib diisi!</string>
+    <string name="register_password_required">Password wajib diisi!</string>
+    <string name="register_password_min_length">Password minimal 6 karakter!</string>
+
+    <!-- Search Password -->
+    <string name="search_title">Cari Password</string>
+    <string name="search_hint">Cari berdasarkan nama, username...</string>
+    <string name="search_empty_default">Belum ada password tersimpan</string>
+    <string name="search_empty_query">Tidak ada hasil untuk \"%s\"</string>
+    <string name="search_clear_desc">Hapus pencarian</string>
+    <string name="search_back_desc">Kembali</string>
+
+    <!-- Add/Edit Password -->
+    <string name="add_title">Tambah Password</string>
+    <string name="edit_title">Edit Password</string>
+    <string name="add_label_title">Nama Aplikasi</string>
+    <string name="add_hint_title">Contoh: Gmail</string>
+    <string name="add_label_username">Username / Email</string>
+    <string name="add_hint_username">user@gmail.com</string>
+    <string name="add_label_password">Password</string>
+    <string name="add_label_url">URL</string>
+    <string name="add_hint_url">https://gmail.com</string>
+    <string name="add_label_category">Kategori</string>
+    <string name="add_save_button">Simpan</string>
+    <string name="edit_save_button">Simpan Perubahan</string>
+    <string name="add_title_required">Nama aplikasi wajib diisi</string>
+    <string name="add_password_required">Password wajib diisi</string>
+    <string name="add_url_invalid">URL tidak valid</string>
+    <string name="add_generate_desc">Generate password</string>
+    <string name="add_password_generated">Password berhasil digenerate!</string>
+    <string name="save_success">Data disimpan</string>
+    <string name="save_failed">Gagal: %s</string>
+    <string name="update_success">Data diperbarui</string>
+
+    <!-- Category -->
+    <string name="category_other">Lainnya</string>
+    <string name="category_email">Email</string>
+    <string name="category_social">Sosial Media</string>
+    <string name="category_bank">Bank</string>
+    <string name="category_game">Game</string>
+
+    <!-- List Item -->
+    <string name="item_more_desc">Menu</string>
+    <string name="item_toggle_desc">Toggle password</string>
+    <string name="item_copy_desc">Salin password</string>
+    <string name="item_edit_desc">Edit</string>
+    <string name="item_delete_desc">Delete</string>
+    <string name="item_password_copied">Password \"%s\" disalin!</string>
+
+    <!-- Detail Dialog -->
+    <string name="detail_title">Detail Akun</string>
+    <string name="detail_category_label">KATEGORI</string>
+    <string name="detail_username_label">USERNAME / EMAIL</string>
+    <string name="detail_password_label">PASSWORD</string>
+    <string name="detail_url_label">URL / WEBSITE</string>
+    <string name="detail_close_desc">Tutup</string>
+    <string name="detail_copy_username_desc">Salin username</string>
+    <string name="detail_copy_password_desc">Salin password</string>
+    <string name="detail_username_copied">Username disalin!</string>
+    <string name="detail_password_copied">Password disalin!</string>
+    <string name="detail_url_empty">-</string>
+
+    <!-- Delete Confirmation -->
+    <string name="delete_title">Hapus Password</string>
+    <string name="delete_message">Apakah Anda yakin ingin menghapus password \"%s\"?</string>
+    <string name="delete_confirm">Hapus</string>
+    <string name="delete_cancel">Batal</string>
+    <string name="delete_success">Berhasil dihapus</string>
+    <string name="delete_failed">Gagal hapus</string>
+
+    <!-- General -->
+    <string name="load_failed">Gagal load data</string>
+    <string name="load_retry">Coba Lagi</string>
+    <string name="logout">Logout</string>
+    <string name="logout_confirm">Apakah Anda yakin ingin logout?</string>
+    <string name="logout_success">Berhasil logout</string>
+
+    <!-- Biometric -->
+    <string name="biometric_subtitle">Verifikasi identitas untuk membuka CreePass</string>
+
+    <!-- Export/Import -->
+    <string name="more_options_desc">Opsi lainnya</string>
+    <string name="export_title">Ekspor Data</string>
+    <string name="export_success">Data berhasil diekspor!</string>
+    <string name="export_failed">Gagal mengekspor data</string>
+    <string name="import_title">Impor Data</string>
+    <string name="import_success">Data berhasil diimpor!</string>
+    <string name="import_failed">Gagal mengimpor data</string>
+    <string name="import_invalid_format">Format file tidak valid</string>
 </resources>

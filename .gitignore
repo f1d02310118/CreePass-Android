@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+*.md
+
+# Firebase
+google-services.json
+
+# Android
+*.apk
+*.aab
+local.properties

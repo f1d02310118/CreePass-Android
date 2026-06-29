@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ProjectMobile"
+rootProject.name = "CreePass"
 include(":app")
  

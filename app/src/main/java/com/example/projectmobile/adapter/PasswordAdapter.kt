@@ -1,18 +1,20 @@
 package com.example.projectmobile.adapter
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.text.method.PasswordTransformationMethod
+import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projectmobile.R
 import com.example.projectmobile.model.PasswordItem
+import com.example.projectmobile.util.copyToClipboardWithTimeout
+import com.example.projectmobile.util.togglePasswordVisibility
 
 class PasswordAdapter(
     private val context: Context,
@@ -21,6 +23,8 @@ class PasswordAdapter(
     private val onEditClick: (PasswordItem) -> Unit,
     private val onDeleteClick: (PasswordItem) -> Unit
 ) : RecyclerView.Adapter<PasswordAdapter.PasswordViewHolder>() {
+
+    private val visibilityStates = SparseBooleanArray()
 
     inner class PasswordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
@@ -49,33 +53,37 @@ class PasswordAdapter(
         holder.tvCategory.text = item.category
         holder.layoutAction.visibility = View.GONE
 
-        // Default sembunyikan password
-        holder.isPasswordVisible = false
-        holder.tvPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+        holder.isPasswordVisible = visibilityStates.get(position, false)
         holder.tvPassword.text = item.password
-        holder.btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
+        if (holder.isPasswordVisible) {
+            holder.tvPassword.transformationMethod = null
+            holder.btnTogglePassword.setImageResource(R.drawable.ic_eye_on)
+        } else {
+            holder.tvPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            holder.btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
+        }
 
-        // Toggle show/hide password
         holder.btnTogglePassword.setOnClickListener {
-            holder.isPasswordVisible = !holder.isPasswordVisible
+            holder.isPasswordVisible = togglePasswordVisibility(
+                holder.isPasswordVisible,
+                null,
+                holder.btnTogglePassword,
+                R.drawable.ic_eye_on,
+                R.drawable.ic_eye_off
+            )
             if (holder.isPasswordVisible) {
                 holder.tvPassword.transformationMethod = null
-                holder.btnTogglePassword.setImageResource(R.drawable.ic_eye_on)
             } else {
                 holder.tvPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-                holder.btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
             }
+            visibilityStates.put(position, holder.isPasswordVisible)
         }
 
-        // Copy password ke clipboard
         holder.btnCopyPassword.setOnClickListener {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("password", item.password)
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "Password \"${item.title}\" disalin!", Toast.LENGTH_SHORT).show()
+            copyToClipboardWithTimeout(context, "password", item.password)
+            Toast.makeText(context, context.getString(R.string.item_password_copied, item.title), Toast.LENGTH_SHORT).show()
         }
 
-        // Klik item untuk lihat detail
         holder.itemView.setOnClickListener {
             onItemClick(item)
         }
@@ -99,9 +107,20 @@ class PasswordAdapter(
 
     override fun getItemCount(): Int = passwordList.size
 
-    // Update list saat hasil pencarian berubah
     fun updateList(newList: MutableList<PasswordItem>) {
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int = passwordList.size
+            override fun getNewListSize(): Int = newList.size
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return passwordList[oldItemPosition].id == newList[newItemPosition].id
+            }
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return passwordList[oldItemPosition] == newList[newItemPosition]
+            }
+        }
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         passwordList = newList
-        notifyDataSetChanged()
+        visibilityStates.clear()
+        diffResult.dispatchUpdatesTo(this)
     }
 }
