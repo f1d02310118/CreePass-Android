@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/add_label_title"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/etTitle"
@@ -74,6 +74,8 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="10dp"
                 android:hint="@string/add_hint_title"
+                android:textColor="@color/black"
+                android:textColorHint="@color/text_hint"
                 android:layout_marginTop="6dp"/>
 
             <TextView
@@ -82,7 +84,7 @@
                 android:text="@string/add_label_username"
                 android:textStyle="bold"
                 android:layout_marginTop="14dp"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/etUsername"
@@ -92,6 +94,8 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="10dp"
                 android:hint="@string/add_hint_username"
+                android:textColor="@color/black"
+                android:textColorHint="@color/text_hint"
                 android:layout_marginTop="6dp"/>
 
             <TextView
@@ -100,12 +104,13 @@
                 android:text="@string/add_label_password"
                 android:textStyle="bold"
                 android:layout_marginTop="14dp"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/black"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:background="@drawable/bg_input"
                 android:layout_marginTop="6dp">
 
@@ -115,30 +120,49 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="10dp"
-                    android:inputType="textPassword" />
+                    android:paddingHorizontal="8dp"
+                    android:gravity="center_vertical"
+                    android:inputType="textVisiblePassword"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:typeface="monospace" />
 
-                <ImageButton
-                    android:id="@+id/btnGeneratePassword"
-                    android:layout_width="40dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_refresh"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    app:tint="@color/icon_muted"
-                    android:contentDescription="@string/add_generate_desc" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <ImageButton
-                    android:id="@+id/btnToggleAddPassword"
-                    android:layout_width="40dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_eye_off"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    app:tint="@color/icon_muted"
-                    android:contentDescription="@string/item_toggle_desc" />
+                    <ImageButton
+                        android:id="@+id/btnGeneratePassword"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_refresh"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
+                        android:layout_marginEnd="2dp"
+                        app:tint="@color/icon_muted"
+                        android:contentDescription="@string/add_generate_desc" />
+
+                    <ImageButton
+                        android:id="@+id/btnToggleAddPassword"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_eye_off"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
+                        app:tint="@color/icon_muted"
+                        android:contentDescription="@string/item_toggle_desc" />
+                </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPasswordStrength"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -146,7 +170,7 @@
                 android:text="@string/add_label_url"
                 android:textStyle="bold"
                 android:layout_marginTop="14dp"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/etUrl"
@@ -156,6 +180,8 @@
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="10dp"
                 android:hint="@string/add_hint_url"
+                android:textColor="@color/black"
+                android:textColorHint="@color/text_hint"
                 android:layout_marginTop="6dp"/>
 
             <TextView
@@ -164,14 +190,24 @@
                 android:text="@string/add_label_category"
                 android:textStyle="bold"
                 android:layout_marginTop="14dp"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/black"/>
 
             <Spinner
                 android:id="@+id/spCategory"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_input"
+                android:popupBackground="@color/bg_white"
+                android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 android:layout_marginTop="6dp"/>
+
+            <ProgressBar
+                android:id="@+id/progressBarAddEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center_horizontal"/>
 
             <Button
                 android:id="@+id/btnSave"

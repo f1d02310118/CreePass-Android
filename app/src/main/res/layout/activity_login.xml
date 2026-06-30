@@ -67,8 +67,16 @@
             android:textColor="@color/accent_cyan"
             android:textStyle="bold"
             android:textSize="14sp"
+            android:layout_marginStart="6dp"
             android:clickable="true"
             android:focusable="true"/>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"/>
 
 </LinearLayout>

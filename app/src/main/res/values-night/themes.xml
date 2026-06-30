@@ -6,5 +6,10 @@
         <item name="colorOnPrimaryContainer">@color/text_white</item>
         <item name="colorSecondary">@color/primary_purple</item>
         <item name="colorOnSecondary">@color/text_white</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/dark_text_primary</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
     </style>
+
+    <style name="Theme.ProjectMobile" parent="Base.Theme.ProjectMobile" />
 </resources>

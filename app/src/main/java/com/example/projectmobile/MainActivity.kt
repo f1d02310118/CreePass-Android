@@ -6,7 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.projectmobile.activity.LoginActivity
 import com.example.projectmobile.activity.SearchPasswordActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +20,14 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val intent = Intent(this, SearchPasswordActivity::class.java)
-        startActivity(intent)
+        val auth = FirebaseAuth.getInstance()
+        val target = if (auth.currentUser != null) {
+            Intent(this, SearchPasswordActivity::class.java)
+        } else {
+            Intent(this, LoginActivity::class.java)
+        }
+        startActivity(target)
+        finish()
     }
 
 }

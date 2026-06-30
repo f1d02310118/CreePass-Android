@@ -13,6 +13,7 @@
     <string name="login_email_required">Email wajib diisi!</string>
     <string name="login_password_required">Password wajib diisi!</string>
     <string name="login_not_logged_in">User belum login</string>
+    <string name="login_email_invalid">Format email tidak valid</string>
 
     <!-- Register -->
     <string name="register_title">REGISTER</string>
@@ -23,7 +24,8 @@
     <string name="register_failed">Gagal Daftar: %s</string>
     <string name="register_email_required">Email wajib diisi!</string>
     <string name="register_password_required">Password wajib diisi!</string>
-    <string name="register_password_min_length">Password minimal 6 karakter!</string>
+    <string name="register_password_min_length">Password minimal 8 karakter!</string>
+    <string name="register_email_invalid">Format email tidak valid</string>
 
     <!-- Search Password -->
     <string name="search_title">Cari Password</string>
@@ -51,7 +53,6 @@
     <string name="add_url_invalid">URL tidak valid</string>
     <string name="add_generate_desc">Generate password</string>
     <string name="add_password_generated">Password berhasil digenerate!</string>
-    <string name="save_success">Data disimpan</string>
     <string name="save_failed">Gagal: %s</string>
     <string name="update_success">Data diperbarui</string>
 
@@ -87,7 +88,7 @@
     <string name="delete_title">Hapus Password</string>
     <string name="delete_message">Apakah Anda yakin ingin menghapus password \"%s\"?</string>
     <string name="delete_confirm">Hapus</string>
-    <string name="delete_cancel">Batal</string>
+    <string name="cancel">Batal</string>
     <string name="delete_success">Berhasil dihapus</string>
     <string name="delete_failed">Gagal hapus</string>
 
@@ -106,8 +107,21 @@
     <string name="export_title">Ekspor Data</string>
     <string name="export_success">Data berhasil diekspor!</string>
     <string name="export_failed">Gagal mengekspor data</string>
+    <string name="export_warning">File ekspor berisi password dalam bentuk asli (plaintext). Jaga file ini dengan baik dan jangan bagikan ke pihak tidak bertanggung jawab.</string>
+    <string name="export_confirm">Ya, Ekspor</string>
     <string name="import_title">Impor Data</string>
+    <string name="import_confirm">Data baru akan ditambahkan ke daftar yang sudah ada. Lanjutkan impor?</string>
+    <string name="import_confirm_button">Ya, Impor</string>
     <string name="import_success">Data berhasil diimpor!</string>
     <string name="import_failed">Gagal mengimpor data</string>
     <string name="import_invalid_format">Format file tidak valid</string>
+    <string name="import_empty">Tidak ada data baru untuk diimpor (semua sudah ada)</string>
+
+    <!-- Password Strength -->
+    <string name="password_strength_weak">Lemah</string>
+    <string name="password_strength_medium">Sedang</string>
+    <string name="password_strength_strong">Kuat</string>
+
+    <!-- Error -->
+    <string name="save_error_default">Terjadi kesalahan</string>
 </resources>

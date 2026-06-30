@@ -12,6 +12,8 @@
     <!-- Accent -->
     <color name="accent_cyan">#00D4FF</color>
     <color name="accent_blue">#3B82F6</color>
+    <color name="accent_green">#10B981</color>
+    <color name="accent_orange">#F59E0B</color>
     <color name="accent_red">#EF4444</color>
 
     <!-- Background -->
@@ -36,4 +38,13 @@
     <!-- Icon Tint -->
     <color name="icon_muted">#9E9E9E</color>
     <color name="icon_white">#FFFFFF</color>
+
+    <!-- Dark Mode -->
+    <color name="dark_bg">#121212</color>
+    <color name="dark_surface">#1E1E1E</color>
+    <color name="dark_surface_card">#2C2C2C</color>
+    <color name="dark_text_primary">#E0E0E0</color>
+    <color name="dark_text_secondary">#B0B0B0</color>
+    <color name="dark_text_hint">#707070</color>
+    <color name="dark_divider">#333333</color>
 </resources>

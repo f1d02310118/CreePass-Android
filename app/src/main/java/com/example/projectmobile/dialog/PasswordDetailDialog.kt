@@ -7,11 +7,11 @@ import android.text.method.PasswordTransformationMethod
 import android.view.Window
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import com.example.projectmobile.R
 import com.example.projectmobile.model.PasswordItem
 import com.example.projectmobile.util.copyToClipboardWithTimeout
 import com.example.projectmobile.util.togglePasswordVisibility
+import com.google.android.material.snackbar.Snackbar
 
 class PasswordDetailDialog(
     context: Context,
@@ -52,26 +52,21 @@ class PasswordDetailDialog(
         btnToggleDetail.setOnClickListener {
             isPasswordVisible = togglePasswordVisibility(
                 isPasswordVisible,
-                null,
+                tvDetailPassword,
                 btnToggleDetail,
                 R.drawable.ic_eye_on,
                 R.drawable.ic_eye_off
             )
-            if (isPasswordVisible) {
-                tvDetailPassword.transformationMethod = null
-            } else {
-                tvDetailPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-            }
         }
 
         btnCopyUsername.setOnClickListener {
             copyToClipboardWithTimeout(context, "username", item.username)
-            Toast.makeText(context, context.getString(R.string.detail_username_copied), Toast.LENGTH_SHORT).show()
+            Snackbar.make(btnCopyUsername, context.getString(R.string.detail_username_copied), Snackbar.LENGTH_SHORT).show()
         }
 
         btnCopyPassword.setOnClickListener {
             copyToClipboardWithTimeout(context, "password", item.password)
-            Toast.makeText(context, context.getString(R.string.detail_password_copied), Toast.LENGTH_SHORT).show()
+            Snackbar.make(btnCopyPassword, context.getString(R.string.detail_password_copied), Snackbar.LENGTH_SHORT).show()
         }
 
         btnClose.setOnClickListener {

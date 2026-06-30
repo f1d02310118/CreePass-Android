@@ -2,8 +2,11 @@ package com.example.projectmobile.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
@@ -16,6 +19,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
+    private lateinit var progressBar: ProgressBar
     private lateinit var tvToRegister: TextView
     private lateinit var auth: FirebaseAuth
 
@@ -26,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
+        progressBar = findViewById(R.id.progressBarLogin)
         tvToRegister = findViewById(R.id.tvToRegister)
 
         auth = FirebaseAuth.getInstance()
@@ -52,11 +57,22 @@ class LoginActivity : AppCompatActivity() {
                 etPassword.error = getString(R.string.login_password_required)
                 return@setOnClickListener
             }
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etEmail.error = getString(R.string.login_email_invalid)
+                return@setOnClickListener
+            }
+
+            progressBar.visibility = View.VISIBLE
+            btnLogin.isEnabled = false
+            tvToRegister.isEnabled = false
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
+                    progressBar.visibility = View.GONE
+                    btnLogin.isEnabled = true
+                    tvToRegister.isEnabled = true
+
                     if (task.isSuccessful) {
-                        Snackbar.make(findViewById(android.R.id.content), getString(R.string.login_success), Snackbar.LENGTH_SHORT).show()
                         navigateToHome()
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), getString(R.string.login_failed), Snackbar.LENGTH_SHORT).show()

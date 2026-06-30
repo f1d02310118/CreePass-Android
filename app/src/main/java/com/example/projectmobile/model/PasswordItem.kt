@@ -9,5 +9,7 @@ data class PasswordItem(
     val username: String = "",
     val password: String = "",
     val url: String = "",
-    val category: String = "Lainnya"
+    val category: String = "Lainnya",
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )

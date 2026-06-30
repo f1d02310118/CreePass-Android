@@ -4,10 +4,12 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import java.security.KeyStore
+import java.security.GeneralSecurityException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.AEADBadTagException
 
 object CryptoUtil {
 
@@ -56,12 +58,15 @@ object CryptoUtil {
         return Base64.encodeToString(combined, Base64.NO_WRAP)
     }
 
-    fun decrypt(encryptedBase64: String): String {
+    fun decrypt(encryptedBase64: String, safe: Boolean = true): String {
         if (encryptedBase64.isEmpty()) return encryptedBase64
 
         return try {
             val combined = Base64.decode(encryptedBase64, Base64.NO_WRAP)
-            if (combined.size < GCM_IV_LENGTH + 1) return encryptedBase64
+            if (combined.size < GCM_IV_LENGTH + 1) {
+                return if (safe) encryptedBase64
+                else throw SecurityException("Invalid encrypted data format")
+            }
 
             val iv = combined.sliceArray(0 until GCM_IV_LENGTH)
             val ciphertext = combined.sliceArray(GCM_IV_LENGTH until combined.size)
@@ -69,8 +74,12 @@ object CryptoUtil {
             val cipher = Cipher.getInstance(TRANSFORMATION)
             cipher.init(Cipher.DECRYPT_MODE, getOrCreateKey(), GCMParameterSpec(GCM_TAG_LENGTH, iv))
             String(cipher.doFinal(ciphertext), Charsets.UTF_8)
-        } catch (e: Exception) {
-            encryptedBase64
+        } catch (e: AEADBadTagException) {
+            if (safe) encryptedBase64
+            else throw SecurityException("Decryption failed: invalid ciphertext", e)
+        } catch (e: GeneralSecurityException) {
+            if (safe) encryptedBase64
+            else throw SecurityException("Decryption failed: ${e.message}", e)
         }
     }
 }

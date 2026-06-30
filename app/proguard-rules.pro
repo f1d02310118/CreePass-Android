@@ -10,6 +10,9 @@
     public static final android.os.Parcelable$Creator CREATOR;
 }
 
+# CryptoUtil — Android Keystore encryption
+-keep class com.example.projectmobile.util.CryptoUtil { *; }
+
 # Keep Serializable
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
