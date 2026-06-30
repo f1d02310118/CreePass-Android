@@ -15,13 +15,7 @@
         android:theme="@style/Theme.ProjectMobile">
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
         <activity android:name=".activity.SearchPasswordActivity" />
         <activity
             android:name=".activity.AddEditActivity"
@@ -29,8 +23,14 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.LoginActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.RegisterActivity"
             android:exported="false"

@@ -45,7 +45,6 @@ class SearchPasswordActivity : AppCompatActivity() {
     private lateinit var rvPasswords: RecyclerView
     private lateinit var tvEmptyState: TextView
     private lateinit var progressBar: ProgressBar
-    private lateinit var btnBack: ImageButton
     private lateinit var btnAdd: ImageButton
     private lateinit var btnClearSearch: ImageButton
     private lateinit var btnLogout: ImageButton
@@ -55,7 +54,6 @@ class SearchPasswordActivity : AppCompatActivity() {
     private var fullList: MutableList<PasswordItem> = mutableListOf()
     private var searchHandler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
-    private var needsBiometric = false
 
     private val exportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri != null) performExport(uri)
@@ -84,7 +82,6 @@ class SearchPasswordActivity : AppCompatActivity() {
         rvPasswords = findViewById(R.id.rvPasswords)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         progressBar = findViewById(R.id.progressBar)
-        btnBack = findViewById(R.id.btnBack)
         btnAdd = findViewById(R.id.btnAdd)
         btnClearSearch = findViewById(R.id.btnClearSearch)
         btnLogout = findViewById(R.id.btnLogout)
@@ -213,10 +210,6 @@ class SearchPasswordActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        btnBack.setOnClickListener {
-            finish()
-        }
-
         btnClearSearch.setOnClickListener {
             etSearch.setText("")
             etSearch.requestFocus()
@@ -406,49 +399,11 @@ class SearchPasswordActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (needsBiometric && auth.currentUser != null) {
-            showBiometricPrompt()
-        } else {
-            loadData()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        needsBiometric = true
+        loadData()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         searchHandler.removeCallbacksAndMessages(null)
-    }
-
-    private fun showBiometricPrompt() {
-        val executor = ContextCompat.getMainExecutor(this)
-        val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                needsBiometric = false
-                loadData()
-            }
-
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
-                    errorCode == BiometricPrompt.ERROR_USER_CANCELED) {
-                    auth.signOut()
-                    val intent = Intent(this@SearchPasswordActivity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    finish()
-                }
-            }
-        })
-
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.app_name))
-            .setSubtitle(getString(R.string.biometric_subtitle))
-            .setNegativeButtonText(getString(R.string.login_title))
-            .build()
-
-        biometricPrompt.authenticate(promptInfo)
     }
 }
